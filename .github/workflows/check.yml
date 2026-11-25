@@ -2,9 +2,9 @@ name: Check
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -14,59 +14,60 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Cargo Target Cache
-      uses: actions/cache@v3
-      with:
-        path: target
-        key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}
-          ${{ runner.os }}-cargo-target
-    - name: Build
-      run: cargo build --verbose --all --all-features
-    - name: Run tests
-      run: cargo test --verbose --all --all-features
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Cargo Target Cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}
+            ${{ runner.os }}-cargo-target
+      - run: sudo apt-get install -y libx11-xcb-dev
+      - name: Build
+        run: cargo build --verbose --all --all-features
+      - name: Run tests
+        run: cargo test --verbose --all --all-features
 
   msrv:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
-        rust: ["1.64.0"]
+        rust: ["1.88.0"]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Cargo Target Cache
-      uses: actions/cache@v3
-      with:
-        path: target
-        key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}
-          ${{ runner.os }}-cargo-target
-    - name: Install Rust
-      run: |
-        rustup toolchain install ${{ matrix.rust }}
-        rustup default ${{ matrix.rust }}
-        rustup component add rustfmt
-    - name: Build
-      run: cargo build --verbose
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Cargo Target Cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}
+            ${{ runner.os }}-cargo-target
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.rust }}
+          rustup default ${{ matrix.rust }}
+          rustup component add rustfmt
+      - name: Build
+        run: cargo build --verbose
 
   clippy_and_fmt:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Cargo Target Cache
-      uses: actions/cache@v3
-      with:
-        path: target
-        key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}
-          ${{ runner.os }}-cargo-target
-    - name: Clippy
-      run: cargo clippy --verbose --all --all-features -- -D warnings
-    - name: Rustfmt
-      run: cargo fmt --verbose --all -- --check
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Cargo Target Cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.toml') }}
+            ${{ runner.os }}-cargo-target
+      - name: Clippy
+        run: cargo clippy --verbose --all --all-features -- -D warnings
+      - name: Rustfmt
+        run: cargo fmt --verbose --all -- --check

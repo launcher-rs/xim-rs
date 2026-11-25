@@ -1,8 +1,9 @@
 #![feature(trait_alias)]
 
+use rgpui_xim as xim;
 use x11rb::connection::Connection;
-use x11rb::protocol::{xproto::*, Event};
-use xim::{x11rb::X11rbClient, Client};
+use x11rb::protocol::{Event, xproto::*};
+use xim::{Client, x11rb::X11rbClient};
 use xim_parser::ForwardEventFlag;
 
 use self::handler::ExampleHandler;
@@ -54,16 +55,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             continue;
         } else {
             match e {
-                Event::KeyPress(e) | Event::KeyRelease(e) => {
-                    if handler.connected {
-                        log::trace!("Send: {:?}", e);
-                        client.forward_event(
-                            handler.im_id,
-                            handler.ic_id,
-                            ForwardEventFlag::empty(),
-                            &e,
-                        )?;
-                    }
+                Event::KeyPress(e) | Event::KeyRelease(e) if handler.connected => {
+                    log::trace!("Send: {:?}", e);
+                    client.forward_event(
+                        handler.im_id,
+                        handler.ic_id,
+                        ForwardEventFlag::empty(),
+                        &e,
+                    )?;
                 }
                 _ => {}
             }

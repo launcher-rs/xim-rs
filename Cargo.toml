@@ -1,31 +1,25 @@
 [workspace]
-members = [
-    ".",
-    "xim-ctext",
-    "xim-gen",
-    "xim-parser",
-]
+members = [".", "xim-ctext", "xim-gen", "xim-parser"]
 
 [package]
 name = "rgpui-xim"
-description = "XIM protocol parser, handler (rgpui maintained fork, x11rb 0.14)"
-version = "0.4.2"
-authors = ["Riey <creeper844@gmail.com>"]
+description = "XIM protocol parser, handler"
+version = "0.5.0"
 repository = "https://github.com/launcher-rs/xim-rs"
 documentation = "https://docs.rs/rgpui-xim"
 categories = ["no-std", "parser-implementations"]
 readme = "README.md"
 keywords = ["x11", "xim", "x11rb", "no-std"]
-edition = "2018"
+edition = "2024"
 license = "MIT"
-rust-version = "1.64"
+rust-version = "1.88"
 
 [features]
 default = ["std"]
 
 bootstrap-parser = ["xim-parser/bootstrap"]
 
-std = ["xim-parser/std", "xim-ctext/std", "ahash/std"]
+std = ["xim-parser/std", "ahash/std"]
 
 x11rb-client = ["client", "x11rb", "std"]
 xlib-client = ["client", "x11-dl", "std"]
@@ -35,18 +29,20 @@ x11rb-xcb = ["x11rb/allow-unsafe-code", "std"]
 
 # only for internal usage
 
-client = []
-server = []
+client = ["dep:log", "dep:xim-ctext", "xim-ctext/std"]
+server = ["dep:log"]
 
 [dependencies]
-xim-parser = { path = "./xim-parser", version = "0.2.0", default-features = false }
-xim-ctext = { version = "0.5.0", default-features = false }
-log = { version = "0.4", default-features = false }
-ahash = { version = "0.8", default-features = false, features = ["compile-time-rng"] }
+xim-parser = { path = "./xim-parser", version = "0.3.0", default-features = false }
+xim-ctext = { path = "./xim-ctext", version = "0.5.0", default-features = false, optional = true }
+log = { version = "0.4", default-features = false, optional = true }
+ahash = { version = "0.8", default-features = false, features = [
+    "compile-time-rng",
+] }
 
 x11rb = { version = "0.14", optional = true }
 x11-dl = { version = "2.18.5", optional = true }
-hashbrown = { version = "0.14.0", default-features = false }
+hashbrown = { version = "0.17.0", default-features = false }
 
 [[example]]
 name = "x11rb_client"
@@ -64,7 +60,7 @@ path = "examples/xlib_client.rs"
 required-features = ["xlib-client"]
 
 [dev-dependencies]
-criterion = "0.5.1"
+criterion = "0.8"
 pretty_env_logger = "0.5.0"
 
 [[bench]]

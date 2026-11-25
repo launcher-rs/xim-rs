@@ -56,7 +56,9 @@ impl EnumFormat {
 
         writeln!(
             out,
-            "fn read(reader: &mut Reader) -> Result<Self, ReadError> {{ let repr = {}::read(reader)?;", self.repr)?;
+            "fn read(reader: &mut Reader) -> Result<Self, ReadError> {{ let repr = {}::read(reader)?;",
+            self.repr
+        )?;
 
         if self.bitflag {
             writeln!(
@@ -213,7 +215,7 @@ impl XimFormat {
             "#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]"
         )?;
         writeln!(out, "pub enum AttributeName {{")?;
-        for (key, _value) in self.attribute_names.iter() {
+        for key in self.attribute_names.keys() {
             writeln!(out, "{},", key)?;
         }
         writeln!(out, "}}")?;
@@ -243,7 +245,10 @@ impl XimFormat {
         for (key, value) in self.attribute_names.iter() {
             writeln!(out, "b\"{}\" => Ok(Self::{}),", value, key)?;
         }
-        writeln!(out, "bytes => Err(reader.invalid_data(\"AttributeName\", core::str::from_utf8(bytes).unwrap_or(\"NOT_UTF8\"))),")?;
+        writeln!(
+            out,
+            "bytes => Err(reader.invalid_data(\"AttributeName\", core::str::from_utf8(bytes).unwrap_or(\"NOT_UTF8\"))),"
+        )?;
         // match
         writeln!(out, "}}")?;
         // fn read
@@ -254,7 +259,10 @@ impl XimFormat {
         writeln!(out, "impl XimWrite for AttributeName {{")?;
 
         writeln!(out, "fn write(&self, writer: &mut Writer) {{")?;
-        writeln!(out, "let name = self.name(); (name.len() as u16).write(writer); writer.write(name.as_bytes());")?;
+        writeln!(
+            out,
+            "let name = self.name(); (name.len() as u16).write(writer); writer.write(name.as_bytes());"
+        )?;
         // fn write
         writeln!(out, "}}")?;
 
@@ -282,7 +290,7 @@ impl XimFormat {
         writeln!(out, "impl Request {{")?;
         writeln!(out, "pub fn name(&self) -> &'static str {{")?;
         writeln!(out, "match self {{")?;
-        for (name, _req) in self.requests.iter() {
+        for name in self.requests.keys() {
             writeln!(out, "Request::{} {{ .. }} => \"{}\",", name, name)?;
         }
         // match
@@ -324,7 +332,10 @@ impl XimFormat {
             writeln!(out, "}}),")?;
         }
 
-        writeln!(out, "_ => Err(reader.invalid_data(\"Opcode\", alloc::format!(\"({{}}, {{}})\", major_opcode, minor_opcode))),")?;
+        writeln!(
+            out,
+            "_ => Err(reader.invalid_data(\"Opcode\", alloc::format!(\"({{}}, {{}})\", major_opcode, minor_opcode))),"
+        )?;
 
         // match
         writeln!(out, "}}")?;

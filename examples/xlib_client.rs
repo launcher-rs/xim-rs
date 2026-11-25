@@ -1,8 +1,9 @@
 #![feature(trait_alias)]
 
+use rgpui_xim as xim;
 use std::{mem::MaybeUninit, ptr};
 use x11_dl::xlib;
-use xim::{xlib::XlibClient, Client};
+use xim::{Client, xlib::XlibClient};
 use xim_parser::ForwardEventFlag;
 
 use self::handler::ExampleHandler;
@@ -53,15 +54,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 continue;
             } else {
                 match e.get_type() {
-                    xlib::KeyPress | xlib::KeyRelease => {
-                        if handler.connected {
-                            client.forward_event(
-                                handler.im_id,
-                                handler.ic_id,
-                                ForwardEventFlag::empty(),
-                                &e.key,
-                            )?;
-                        }
+                    xlib::KeyPress | xlib::KeyRelease if handler.connected => {
+                        client.forward_event(
+                            handler.im_id,
+                            handler.ic_id,
+                            ForwardEventFlag::empty(),
+                            &e.key,
+                        )?;
                     }
                     _ => {}
                 }
