@@ -1,6 +1,6 @@
 #[allow(clippy::uninlined_format_args)]
 fn dump(s: &str) {
-    let b = xim_ctext::utf8_to_compound_text(s);
+    let b = rgpui_xim_ctext::utf8_to_compound_text(s);
 
     println!("{}", s);
 

@@ -16,11 +16,11 @@ The current Minimum Safe Rust Version in **1.88**. The current **tentative** pol
 
 Binding with X client libraries
 
-### xim-parser
+### rgpui-xim-parser
 
 Read/Write xim message generated from xim-gen
 
-### xim-gen
+### rgpui-xim-gen
 
 xim protocol parser generator
 

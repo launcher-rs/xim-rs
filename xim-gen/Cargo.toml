@@ -1,8 +1,8 @@
 [package]
-name = "xim-gen"
+name = "rgpui-xim-gen"
 description = "XIM protocol parser generator"
-version = "0.2.0"
-repository = "https://github.com/Riey/xim-rs"
+version = "0.1.0"
+repository = "https://github.com/launcher-rs/xim-rs"
 edition = "2024"
 license = "MIT"
 rust-version = "1.88"

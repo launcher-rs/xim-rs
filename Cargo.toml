@@ -33,8 +33,8 @@ client = ["dep:log", "dep:xim-ctext", "xim-ctext/std"]
 server = ["dep:log"]
 
 [dependencies]
-xim-parser = { path = "./xim-parser", version = "0.3.0", default-features = false }
-xim-ctext = { path = "./xim-ctext", version = "0.5.0", default-features = false, optional = true }
+xim-parser = { package = "rgpui-xim-parser", path = "./xim-parser", version = "0.1.0", default-features = false }
+xim-ctext = { package = "rgpui-xim-ctext", path = "./xim-ctext", version = "0.1.0", default-features = false, optional = true }
 log = { version = "0.4", default-features = false, optional = true }
 ahash = { version = "0.8", default-features = false, features = [
     "compile-time-rng",
