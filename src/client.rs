@@ -140,9 +140,14 @@ pub fn handle_request<C: ClientCore>(
             input_context_id,
             preedit_string,
         } => {
-            let preedit_string =
-                xim_ctext::compound_text_to_utf8(&preedit_string).expect("Encoding error");
-            handler.handle_reset_ic(client, input_method_id, input_context_id, &preedit_string);
+            if let Some(preedit_string) = decode_compound_text(&preedit_string) {
+                handler.handle_reset_ic(
+                    client,
+                    input_method_id,
+                    input_context_id,
+                    &preedit_string,
+                )?;
+            }
             Ok(())
         }
         Request::Error { code, detail, .. } => Err(ClientError::XimError(code, detail)),
@@ -183,12 +188,9 @@ pub fn handle_request<C: ClientCore>(
                 commited,
                 syncronous,
             } => {
-                handler.handle_commit(
-                    client,
-                    input_method_id,
-                    input_context_id,
-                    &xim_ctext::compound_text_to_utf8(&commited).expect("Encoding Error"),
-                )?;
+                if let Some(commited) = decode_compound_text(&commited) {
+                    handler.handle_commit(client, input_method_id, input_context_id, &commited)?;
+                }
 
                 if syncronous {
                     client.send_req(Request::SyncReply {
@@ -233,19 +235,21 @@ pub fn handle_request<C: ClientCore>(
             status,
             feedbacks,
         } => {
-            let preedit_string =
-                xim_ctext::compound_text_to_utf8(&preedit_string).expect("Encoding Error");
-            handler.handle_preedit_draw(
-                client,
-                input_method_id,
-                input_context_id,
-                caret,
-                chg_first,
-                chg_length,
-                status,
-                &preedit_string,
-                feedbacks,
-            )
+            if let Some(preedit_string) = decode_compound_text(&preedit_string) {
+                handler.handle_preedit_draw(
+                    client,
+                    input_method_id,
+                    input_context_id,
+                    caret,
+                    chg_first,
+                    chg_length,
+                    status,
+                    &preedit_string,
+                    feedbacks,
+                )
+            } else {
+                Ok(())
+            }
         }
         Request::PreeditCaret {
             input_method_id,
@@ -274,6 +278,16 @@ pub fn handle_request<C: ClientCore>(
         _ => {
             log::warn!("Unknown request {:?}", req);
             Ok(())
+        }
+    }
+}
+
+fn decode_compound_text(bytes: &[u8]) -> Option<String> {
+    match xim_ctext::compound_text_to_utf8(bytes) {
+        Ok(text) => Some(text),
+        Err(error) => {
+            log::warn!("Failed to decode XIM COMPOUND_TEXT: {}", error);
+            None
         }
     }
 }
